@@ -22,5 +22,22 @@ namespace L3WebAPI.Business.Implementations {
                 throw;
             }
         }
+
+        public async Task<Game?> GetById(int id) {
+            try {
+                var data = await _gamesDataAccess.GetById(id);
+                /*if (data is not null) {
+                    return data.ToDto();
+                } else {
+                    return null;
+                }*/
+                return data?.ToDto();
+            } catch (Exception e) {
+                _logger.LogError(e.Message);
+                _logger.LogError(e.StackTrace);
+
+                throw;
+            }
+        }
     }
 }

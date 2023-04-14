@@ -22,10 +22,13 @@ namespace L3WebAPI.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<Game>> GetById(int id) {
+            var game = await _gamesService.GetById(id);
 
-            return Ok(); // 200
+            if (game is null) {
+                return NoContent();
+            }
 
-            return NoContent(); // 204
+            return Ok(game);
         }
     }
 }
