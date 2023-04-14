@@ -12,10 +12,20 @@ namespace L3WebAPI.Controllers {
             _gamesService = gamesService;
         }
 
-        [HttpGet]
+        [HttpGet("/")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IEnumerable<Game>> GetAllGames() {
-            return await _gamesService.GetAllGames();
+        public async Task<ActionResult<IEnumerable<Game>>> GetAllGames() {
+            return Ok(await _gamesService.GetAllGames());
+        }
+
+        [HttpGet("/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult<Game>> GetById(int id) {
+
+            return Ok(); // 200
+
+            return NoContent(); // 204
         }
     }
 }
