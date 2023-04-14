@@ -1,6 +1,10 @@
-﻿namespace L3WebAPI.Common.DTO {
+﻿using System.Text.Json.Serialization;
+
+namespace L3WebAPI.Common.DTO {
     public class Price {
         public double Value { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Currency Currency { get; set; }
     }
 
