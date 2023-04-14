@@ -44,5 +44,9 @@ namespace L3WebAPI.LocalData.Implementations {
         public async Task<Game?> GetById(int id) {
             return _games.FirstOrDefault(x => x.Id == id);
         }
+
+        public async Task<IEnumerable<Game>> SearchByName(string name) {
+            return _games.Where(x => x.Name.Contains(name));
+        }
     }
 }

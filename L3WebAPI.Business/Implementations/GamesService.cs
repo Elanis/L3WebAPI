@@ -39,5 +39,20 @@ namespace L3WebAPI.Business.Implementations {
                 throw;
             }
         }
+
+        public async Task<IEnumerable<Game>> SearchByName(string name) {
+            try {
+                return (await _gamesDataAccess.SearchByName(name)).Select(x => x.ToDto());
+            } catch (Exception e) {
+                _logger.LogError(e.Message);
+                _logger.LogError(e.StackTrace);
+
+                throw;
+            }
+        }
+
+        public async Task Create(Game game) {
+            throw new NotImplementedException();
+        }
     }
 }

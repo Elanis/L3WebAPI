@@ -30,5 +30,23 @@ namespace L3WebAPI.Controllers {
 
             return Ok(game);
         }
+
+        [HttpGet("/search/{name}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<Game>>> SearchByName(string name) {
+            return Ok(await _gamesService.SearchByName(name));
+        }
+
+        [HttpPost("/")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> Create(Game game) {
+            try {
+                await _gamesService.Create(game);
+                return Created($"/api/Games/{game.Id}", game);
+            } catch (ArgumentException ex) {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
