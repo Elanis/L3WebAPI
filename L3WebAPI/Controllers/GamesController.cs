@@ -12,13 +12,13 @@ namespace L3WebAPI.Controllers {
             _gamesService = gamesService;
         }
 
-        [HttpGet("/")]
+        [HttpGet("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Game>>> GetAllGames() {
             return Ok(await _gamesService.GetAllGames());
         }
 
-        [HttpGet("/{id}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<Game>> GetById(int id) {
@@ -31,13 +31,13 @@ namespace L3WebAPI.Controllers {
             return Ok(game);
         }
 
-        [HttpGet("/search/{name}")]
+        [HttpGet("search/{name}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Game>>> SearchByName(string name) {
             return Ok(await _gamesService.SearchByName(name));
         }
 
-        [HttpPost("/")]
+        [HttpPost("")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> Create(Game game) {

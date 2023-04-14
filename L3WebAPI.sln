@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L3WebAPI", "L3WebAPI\L3WebAPI.csproj", "{84D2E7E2-3698-4144-B10C-9A3944C5F1F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L3WebAPI", "L3WebAPI\L3WebAPI.csproj", "{84D2E7E2-3698-4144-B10C-9A3944C5F1F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L3WebAPI.Business", "L3WebAPI.Business\L3WebAPI.Business.csproj", "{AC8188AC-4C1B-4479-9EFF-588EE9AD2988}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L3WebAPI.Business", "L3WebAPI.Business\L3WebAPI.Business.csproj", "{AC8188AC-4C1B-4479-9EFF-588EE9AD2988}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L3WebAPI.LocalData", "L3WebAPI.LocalData\L3WebAPI.LocalData.csproj", "{440315F6-1DF2-4383-95CE-6E44F11F20FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L3WebAPI.LocalData", "L3WebAPI.LocalData\L3WebAPI.LocalData.csproj", "{440315F6-1DF2-4383-95CE-6E44F11F20FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L3WebAPI.Common", "L3WebAPI.Common\L3WebAPI.Common.csproj", "{6C009A8B-A96A-4B78-9198-67A48E581CA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "L3WebAPI.Common", "L3WebAPI.Common\L3WebAPI.Common.csproj", "{6C009A8B-A96A-4B78-9198-67A48E581CA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L3WebAPI.Tests", "L3WebAPI.Tests\L3WebAPI.Tests.csproj", "{0A1738C9-5C5E-4EE3-8555-C07B916DF393}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{6C009A8B-A96A-4B78-9198-67A48E581CA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C009A8B-A96A-4B78-9198-67A48E581CA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C009A8B-A96A-4B78-9198-67A48E581CA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A1738C9-5C5E-4EE3-8555-C07B916DF393}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A1738C9-5C5E-4EE3-8555-C07B916DF393}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A1738C9-5C5E-4EE3-8555-C07B916DF393}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A1738C9-5C5E-4EE3-8555-C07B916DF393}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
