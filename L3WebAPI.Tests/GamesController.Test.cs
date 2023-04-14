@@ -10,6 +10,10 @@ namespace L3WebAPI.Tests {
         public HttpClient client { get; }
         public TestServer server { get; }
 
+        private readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions() {
+            PropertyNameCaseInsensitive = true,
+        };
+
         public GamesControllerTest() {
             var webApplicationFactory = new WebApplicationFactory<Program>();
             client = webApplicationFactory.CreateClient();
@@ -22,7 +26,8 @@ namespace L3WebAPI.Tests {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var data = JsonSerializer.Deserialize<IEnumerable<Game>>(
-                await response.Content.ReadAsStringAsync()
+                await response.Content.ReadAsStringAsync(),
+                jsonOptions
             );
 
             data.Should().NotBeEmpty();
@@ -45,10 +50,13 @@ namespace L3WebAPI.Tests {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var data = JsonSerializer.Deserialize<Game>(
-                await response.Content.ReadAsStringAsync()
+                await response.Content.ReadAsStringAsync(),
+                jsonOptions
             );
 
             data.Should().NotBeNull();
+            data.Id.Should().NotBe(0);
+            data.Name.Should().NotBeNull();
         }
     }
 }
