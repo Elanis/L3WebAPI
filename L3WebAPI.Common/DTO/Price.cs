@@ -11,5 +11,12 @@
                 Currency = originalPrice.Currency,
             };
         }
+
+        public static DAO.Price ToDAO(this DTO.Price originalPrice) {
+            return new DAO.Price {
+                Value = originalPrice.Value,
+                Currency = originalPrice.Currency,
+            };
+        }
     }
 }

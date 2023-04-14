@@ -4,7 +4,7 @@ using L3WebAPI.LocalData.Interfaces;
 
 namespace L3WebAPI.LocalData.Implementations {
     public class GamesDataAccess : IGamesDataAccess {
-        private readonly IEnumerable<Game> _games = new List<Game> {
+        private static readonly List<Game> _games = new List<Game> {
             new Game {
                 Id = 70,
                 Name = "Half-Life",
@@ -47,6 +47,10 @@ namespace L3WebAPI.LocalData.Implementations {
 
         public async Task<IEnumerable<Game>> SearchByName(string name) {
             return _games.Where(x => x.Name.Contains(name));
+        }
+
+        public async Task Create(Game game) {
+            _games.Add(game);
         }
     }
 }

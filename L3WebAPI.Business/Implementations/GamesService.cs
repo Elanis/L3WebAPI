@@ -52,7 +52,30 @@ namespace L3WebAPI.Business.Implementations {
         }
 
         public async Task Create(Game game) {
-            throw new NotImplementedException();
+            if (game == null) {
+                throw new ArgumentException("Game object is invalid !");
+            }
+
+            if (string.IsNullOrWhiteSpace(game.Name)) {
+                throw new ArgumentException("Name is empty !");
+            }
+
+            if (!game.Prices.Any()) {
+                throw new ArgumentException("The game doesn't have any price !");
+            }
+
+            if (game.Prices.DistinctBy(x => x.Currency).Count() != game.Prices.Count()) {
+                throw new ArgumentException("Duplicate currencies in prices list !");
+            }
+
+            try {
+                await _gamesDataAccess.Create(game.ToDAO());
+            } catch (Exception e) {
+                _logger.LogError(e.Message);
+                _logger.LogError(e.StackTrace);
+
+                throw;
+            }
         }
     }
 }

@@ -5,5 +5,6 @@ namespace L3WebAPI.LocalData.Interfaces {
         Task<IEnumerable<Game>> GetAllGames();
         Task<Game?> GetById(int id);
         Task<IEnumerable<Game>> SearchByName(string name);
+        Task Create(Game game);
     }
 }

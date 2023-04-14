@@ -17,5 +17,14 @@
                 Prices = originalGame.Prices.Select(x => x.ToDto()),
             };
         }
+
+        public static DAO.Game ToDAO(this DTO.Game originalGame) {
+            return new DAO.Game() {
+                Id = originalGame.Id,
+                Name = originalGame.Name,
+                Description = originalGame.Description,
+                Prices = originalGame.Prices.Select(x => x.ToDAO()),
+            };
+        }
     }
 }
