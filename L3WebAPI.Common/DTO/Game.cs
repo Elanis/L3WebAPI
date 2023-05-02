@@ -23,7 +23,7 @@
                 Id = originalGame.Id,
                 Name = originalGame.Name,
                 Description = originalGame.Description,
-                Prices = originalGame.Prices.Select(x => x.ToDAO()),
+                Prices = originalGame.Prices.Select(x => x.ToDAO()).ToList(),
             };
         }
     }

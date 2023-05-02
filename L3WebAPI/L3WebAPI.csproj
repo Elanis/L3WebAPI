@@ -4,16 +4,22 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>a67b8084-a58f-4986-bcec-fa31ea675970</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\L3WebAPI.Business\L3WebAPI.Business.csproj" />
 		<ProjectReference Include="..\L3WebAPI.Common\L3WebAPI.Common.csproj" />
+		<ProjectReference Include="..\L3WebAPI.Database\L3WebAPI.Database.csproj" />
 	</ItemGroup>
 
 </Project>
