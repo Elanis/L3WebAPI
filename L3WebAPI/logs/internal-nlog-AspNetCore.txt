@@ -1,0 +1,7 @@
+2023-05-04 10:16:14.2749 Info Message Template Auto Format enabled
+2023-05-04 10:16:14.2809 Info Loading assembly: NLog.Web.AspNetCore
+2023-05-04 10:16:14.3161 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2023-05-04 10:16:14.3161 Info Registered target NLog.Targets.FileTarget(Name=ownFile-web)
+2023-05-04 10:16:14.3161 Info Registered target NLog.Targets.ConsoleTarget(Name=lifetimeConsole)
+2023-05-04 10:16:14.3368 Info Validating config: TargetNames=allfile, lifetimeConsole, ownFile-web, ConfigItems=56, FilePath=G:\L3WebAPI\L3WebAPI\bin\Debug\net7.0\NLog.config
+2023-05-04 10:16:14.6069 Info Validating config: TargetNames=allfile, lifetimeConsole, ownFile-web, ConfigItems=56, FilePath=G:\L3WebAPI\L3WebAPI\bin\Debug\net7.0\NLog.config

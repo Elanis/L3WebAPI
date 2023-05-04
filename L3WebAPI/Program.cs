@@ -6,58 +6,76 @@ using L3WebAPI.Database;
 using L3WebAPI.Database.Implementations;
 using L3WebAPI.LocalData.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using NLog;
+using NLog.Web;
 
 namespace L3WebAPI {
     public class Program {
         public static void Main(string[] args) {
-            var builder = WebApplication.CreateBuilder(args);
+            var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+            logger.Debug("init main");
 
-            var rawConfig = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddEnvironmentVariables()
-                .AddJsonFile("appsettings.json")
-                .AddUserSecrets<Program>()
-                .Build();
+            try {
+                var builder = WebApplication.CreateBuilder(args);
 
-            var appSettingsSection = rawConfig.GetSection("AppSettings");
-            builder.Services.Configure<AppSettings>(appSettingsSection);
+                var rawConfig = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddEnvironmentVariables()
+                    .AddJsonFile("appsettings.json")
+                    .AddUserSecrets<Program>()
+                    .Build();
 
-            // Add services to the container.
-            builder.Services.AddTransient<DatabaseContext>();
+                var appSettingsSection = rawConfig.GetSection("AppSettings");
+                builder.Services.Configure<AppSettings>(appSettingsSection);
 
-            // Services
-            builder.Services.AddTransient<IGamesService, GamesService>();
+                // NLog: Setup NLog for Dependency injection
+                builder.Logging.ClearProviders();
+                builder.Host.UseNLog();
 
-            // Data
-            builder.Services.AddTransient<IGamesDataAccess, GamesDatabaseAccess>();
+                // Add services to the container.
+                builder.Services.AddTransient<DatabaseContext>();
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+                // Services
+                builder.Services.AddTransient<IGamesService, GamesService>();
 
-            var app = builder.Build();
+                // Data
+                builder.Services.AddTransient<IGamesDataAccess, GamesDatabaseAccess>();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment()) {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                builder.Services.AddControllers();
+                // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+                builder.Services.AddEndpointsApiExplorer();
+                builder.Services.AddSwaggerGen();
+
+                var app = builder.Build();
+
+                // Configure the HTTP request pipeline.
+                if (app.Environment.IsDevelopment()) {
+                    app.UseSwagger();
+                    app.UseSwaggerUI();
+                }
+
+                app.UseHttpsRedirection();
+
+                app.UseAuthorization();
+
+                app.MapControllers();
+
+                using (var scope = app.Services.CreateScope()) {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+
+                    // Here is the migration executed
+                    dbContext.Database.Migrate();
+                }
+
+                app.Run();
+            } catch (Exception exception) {
+                // NLog: catch setup errors
+                logger.Error(exception, "Stopped program because of exception");
+                throw;
+            } finally {
+                // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
+                NLog.LogManager.Shutdown();
             }
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-            app.MapControllers();
-
-            using (var scope = app.Services.CreateScope()) {
-                var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-
-                // Here is the migration executed
-                dbContext.Database.Migrate();
-            }
-
-            app.Run();
         }
     }
 }
