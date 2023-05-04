@@ -14,8 +14,8 @@ namespace L3WebAPI.Controllers {
 
         [HttpGet("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<Game>>> GetAllGames() {
-            return Ok(await _gamesService.GetAllGames());
+        public async Task<ActionResult<IEnumerable<Game>>> GetAllGames(CancellationToken cancellationToken = default) {
+            return Ok(await _gamesService.GetAllGames(cancellationToken));
         }
 
         [HttpGet("{id}")]

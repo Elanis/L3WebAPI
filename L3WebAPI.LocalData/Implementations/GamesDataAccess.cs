@@ -37,8 +37,9 @@ namespace L3WebAPI.LocalData.Implementations {
             },
         };
 
-        public async Task<IEnumerable<Game>> GetAllGames() {
-            return _games;
+        public IAsyncEnumerable<Game> GetAllGames() {
+            throw new NotImplementedException();
+            //return _games;
         }
 
         public async Task<Game?> GetById(int id) {

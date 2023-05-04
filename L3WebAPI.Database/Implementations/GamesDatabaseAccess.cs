@@ -14,8 +14,8 @@ namespace L3WebAPI.Database.Implementations {
             await _databaseContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Game>> GetAllGames() {
-            return _databaseContext.games;
+        public IAsyncEnumerable<Game> GetAllGames() {
+            return _databaseContext.games.AsAsyncEnumerable();
         }
 
         public async Task<Game?> GetById(int id) {

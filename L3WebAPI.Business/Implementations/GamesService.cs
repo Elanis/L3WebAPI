@@ -12,9 +12,15 @@ namespace L3WebAPI.Business.Implementations {
             _logger = logger;
         }
 
-        public async Task<IEnumerable<Game>> GetAllGames() {
+        public async Task<IEnumerable<Game>> GetAllGames(CancellationToken cancellationToken) {
             try {
-                return (await _gamesDataAccess.GetAllGames()).Select(x => x.ToDto());
+                List<Game> games = new List<Game>();
+                await foreach (var game in _gamesDataAccess.GetAllGames()) {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    games.Add(game.ToDto());
+                }
+
+                return games;
             } catch (Exception e) {
                 _logger.LogError(e.Message);
                 _logger.LogError(e.StackTrace);
