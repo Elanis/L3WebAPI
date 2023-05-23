@@ -15,6 +15,8 @@ using System.Text.Json;
 
 namespace L3WebAPI {
 	public class Program {
+		public const string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 		private static Task WriteHealthCheckResponse(HttpContext context, HealthReport healthReport) {
 			context.Response.ContentType = "application/json; charset=utf-8";
 
@@ -70,6 +72,13 @@ namespace L3WebAPI {
 				var appSettingsSection = rawConfig.GetSection("AppSettings");
 				builder.Services.Configure<AppSettings>(appSettingsSection);
 
+				builder.Services.AddCors(options => {
+					options.AddPolicy(name: MyAllowSpecificOrigins,
+						policy => {
+							policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+						});
+				});
+
 				builder.Services.AddHealthChecks()
 						.AddNpgSql(appSettingsSection["ConnectionString"]);
 
@@ -100,6 +109,8 @@ namespace L3WebAPI {
 				}
 
 				app.UseHttpsRedirection();
+
+				app.UseCors(MyAllowSpecificOrigins);
 
 				app.UseAuthorization();
 
