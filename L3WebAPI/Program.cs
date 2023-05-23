@@ -5,77 +5,127 @@ using L3WebAPI.Common;
 using L3WebAPI.Database;
 using L3WebAPI.Database.Implementations;
 using L3WebAPI.LocalData.Interfaces;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NLog;
 using NLog.Web;
+using System.Text;
+using System.Text.Json;
 
 namespace L3WebAPI {
-    public class Program {
-        public static void Main(string[] args) {
-            var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-            logger.Debug("init main");
+	public class Program {
+		private static Task WriteHealthCheckResponse(HttpContext context, HealthReport healthReport) {
+			context.Response.ContentType = "application/json; charset=utf-8";
 
-            try {
-                var builder = WebApplication.CreateBuilder(args);
+			var options = new JsonWriterOptions { Indented = true };
 
-                var rawConfig = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddEnvironmentVariables()
-                    .AddJsonFile("appsettings.json")
-                    .AddUserSecrets<Program>()
-                    .Build();
+			using var memoryStream = new MemoryStream();
+			using (var jsonWriter = new Utf8JsonWriter(memoryStream, options)) {
+				jsonWriter.WriteStartObject();
+				jsonWriter.WriteString("status", healthReport.Status.ToString());
+				jsonWriter.WriteStartObject("results");
 
-                var appSettingsSection = rawConfig.GetSection("AppSettings");
-                builder.Services.Configure<AppSettings>(appSettingsSection);
+				foreach (var healthReportEntry in healthReport.Entries) {
+					jsonWriter.WriteStartObject(healthReportEntry.Key);
+					jsonWriter.WriteString("status",
+						healthReportEntry.Value.Status.ToString());
+					jsonWriter.WriteString("description",
+						healthReportEntry.Value.Description);
+					jsonWriter.WriteStartObject("data");
 
-                // NLog: Setup NLog for Dependency injection
-                builder.Logging.ClearProviders();
-                builder.Host.UseNLog();
+					foreach (var item in healthReportEntry.Value.Data) {
+						jsonWriter.WritePropertyName(item.Key);
 
-                // Add services to the container.
-                builder.Services.AddTransient<DatabaseContext>();
+						JsonSerializer.Serialize(jsonWriter, item.Value,
+							item.Value?.GetType() ?? typeof(object));
+					}
 
-                // Services
-                builder.Services.AddTransient<IGamesService, GamesService>();
+					jsonWriter.WriteEndObject();
+					jsonWriter.WriteEndObject();
+				}
 
-                // Data
-                builder.Services.AddTransient<IGamesDataAccess, GamesDatabaseAccess>();
+				jsonWriter.WriteEndObject();
+				jsonWriter.WriteEndObject();
+			}
 
-                builder.Services.AddControllers();
-                // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-                builder.Services.AddEndpointsApiExplorer();
-                builder.Services.AddSwaggerGen();
+			return context.Response.WriteAsync(
+				Encoding.UTF8.GetString(memoryStream.ToArray()));
+		}
 
-                var app = builder.Build();
+		public static void Main(string[] args) {
+			var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+			logger.Debug("init main");
 
-                // Configure the HTTP request pipeline.
-                if (app.Environment.IsDevelopment()) {
-                    app.UseSwagger();
-                    app.UseSwaggerUI();
-                }
+			try {
+				var builder = WebApplication.CreateBuilder(args);
 
-                app.UseHttpsRedirection();
+				var rawConfig = new ConfigurationBuilder()
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.AddEnvironmentVariables()
+				.AddJsonFile("appsettings.json")
+				.AddUserSecrets<Program>()
+				.Build();
 
-                app.UseAuthorization();
+				var appSettingsSection = rawConfig.GetSection("AppSettings");
+				builder.Services.Configure<AppSettings>(appSettingsSection);
 
-                app.MapControllers();
+				builder.Services.AddHealthChecks()
+						.AddNpgSql(appSettingsSection["ConnectionString"]);
 
-                using (var scope = app.Services.CreateScope()) {
-                    var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+				// NLog: Setup NLog for Dependency injection
+				builder.Logging.ClearProviders();
+				builder.Host.UseNLog();
 
-                    // Here is the migration executed
-                    dbContext.Database.Migrate();
-                }
+				// Add services to the container.
+				builder.Services.AddTransient<DatabaseContext>();
 
-                app.Run();
-            } catch (Exception exception) {
-                // NLog: catch setup errors
-                logger.Error(exception, "Stopped program because of exception");
-                throw;
-            } finally {
-                // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
-                NLog.LogManager.Shutdown();
-            }
-        }
-    }
+				// Services
+				builder.Services.AddTransient<IGamesService, GamesService>();
+
+				// Data
+				builder.Services.AddTransient<IGamesDataAccess, GamesDatabaseAccess>();
+
+				builder.Services.AddControllers();
+				// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+				builder.Services.AddEndpointsApiExplorer();
+				builder.Services.AddSwaggerGen();
+
+				var app = builder.Build();
+
+				// Configure the HTTP request pipeline.
+				if (app.Environment.IsDevelopment()) {
+					app.UseSwagger();
+					app.UseSwaggerUI();
+				}
+
+				app.UseHttpsRedirection();
+
+				app.UseAuthorization();
+
+				// https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks
+				app.MapHealthChecks("/health", new HealthCheckOptions {
+					ResponseWriter = WriteHealthCheckResponse
+				});
+
+				app.MapControllers();
+
+				using (var scope = app.Services.CreateScope()) {
+					var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+
+					// Here is the migration executed
+					dbContext.Database.Migrate();
+				}
+
+				app.Run();
+			} catch (Exception exception) {
+				// NLog: catch setup errors
+				logger.Error(exception, "Stopped program because of exception");
+				throw;
+			} finally {
+				// Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
+				NLog.LogManager.Shutdown();
+			}
+		}
+	}
 }
